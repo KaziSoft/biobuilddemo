@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { FiUpload, FiSave, FiArrowLeft } from 'react-icons/fi';
 import Layout from '@/app/components/Layout';
@@ -17,15 +17,41 @@ export default function AddBlogPage() {
   const [uploading, setUploading] = useState(false);
   const [message, setMessage] = useState<{ text: string; type: 'success' | 'error' } | null>(null);
 
+  // Clean up object URLs when component unmounts
+  useEffect(() => {
+    return () => {
+      if (imageUrl && imageUrl.startsWith('blob:')) {
+        URL.revokeObjectURL(imageUrl);
+      }
+    };
+  }, [imageUrl]);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0] || null;
+    setImageFile(file);
+    
+    // Create preview URL
+    if (file) {
+      // Revoke previous URL if exists
+      if (imageUrl && imageUrl.startsWith('blob:')) {
+        URL.revokeObjectURL(imageUrl);
+      }
+      const url = URL.createObjectURL(file);
+      setImageUrl(url);
+    } else {
+      setImageUrl('');
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setUploading(true);
     setMessage(null);
 
     try {
-      let imageUrl = '';
+      let cloudinaryImageUrl = '';
 
-      // Upload image to Cloudinary
+      // Upload image to Cloudinary if a file is selected
       if (imageFile) {
         const formData = new FormData();
         const baseName = imageFile.name.split('.')[0];
@@ -45,8 +71,12 @@ export default function AddBlogPage() {
         }
 
         const data = await res.json();
-        imageUrl = data.secure_url;
-        setImageUrl(imageUrl);
+        cloudinaryImageUrl = data.secure_url;
+        
+        // Revoke the preview URL
+        if (imageUrl.startsWith('blob:')) {
+          URL.revokeObjectURL(imageUrl);
+        }
       }
 
       // Send blog post to API
@@ -58,7 +88,7 @@ export default function AddBlogPage() {
           description,
           author,
           categories: categories.split(',').map((c) => c.trim()),
-          imageUrl,
+          imageUrl: cloudinaryImageUrl,
         }),
       });
 
@@ -182,7 +212,7 @@ export default function AddBlogPage() {
                       id="image-upload"
                       type="file"
                       accept="image/*"
-                      onChange={(e) => setImageFile(e.target.files?.[0] || null)}
+                      onChange={handleFileChange}
                       className="sr-only"
                       required
                     />
@@ -195,7 +225,7 @@ export default function AddBlogPage() {
                   <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Image Preview:</h3>
                   <img 
                     src={imageUrl} 
-                    alt="Uploaded preview" 
+                    alt="Preview" 
                     className="max-w-full h-auto max-h-64 rounded-lg border border-gray-200 dark:border-gray-600" 
                   />
                 </div>
@@ -204,7 +234,7 @@ export default function AddBlogPage() {
               <div className="flex justify-end space-x-4 pt-4">
                 <button
                   type="button"
-                  onClick={() => router.push('/view-blogs')}
+                  onClick={() => router.push('/blogs/crud')}
                   className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200"
                   disabled={uploading}
                 >

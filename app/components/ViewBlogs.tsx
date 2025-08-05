@@ -59,7 +59,7 @@ const ViewBlogs: React.FC = () => {
           <div key={blog._id} className="rounded overflow-hidden flex flex-col bg-white shadow-md">
             <Link href={`/blogs/${blog._id}`}>
               <img
-                className="w-full h-60 object-cover"
+                className="w-80 h-auto object-cover"
                 src={blog.imageUrl}
                 alt={blog.title}
               />

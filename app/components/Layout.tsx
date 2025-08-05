@@ -1,6 +1,6 @@
 'use client'
 import React, { useState, useEffect } from 'react';
-import { FaBars, FaTimes, FaHome, FaUser, FaNewspaper, FaSignOutAlt, FaMapMarkerAlt, FaFileInvoice } from 'react-icons/fa';
+import { FaBars, FaTimes, FaHome, FaUser, FaNewspaper, FaSignOutAlt, FaMapMarkerAlt, FaFileInvoice, FaLock, FaChartLine, FaBlogger } from 'react-icons/fa';
 import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -14,26 +14,17 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const router = useRouter();
   const pathname = usePathname();
 
-  // Toggle the mobile menu
-  const toggleMenu = () => {
-    setIsOpen(!isOpen);
-  };
+  const toggleMenu = () => setIsOpen(!isOpen);
 
-  // Handle Logout
   const handleLogout = () => {
-    // Clear the user session (e.g., localStorage or another method)
-    localStorage.removeItem('user'); // Example using localStorage
-
-    // Redirect to the login page
+    localStorage.removeItem('user');
     router.push('/login');
   };
 
-  // Close the mobile menu when the pathname changes
   useEffect(() => {
-    setIsOpen(false); // Close the menu on path change
+    setIsOpen(false);
   }, [pathname]);
 
-  // Force reload if already on Home page
   const handleHomeClick = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
     if (pathname === '/') {
       e.preventDefault();
@@ -42,78 +33,130 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   };
 
   return (
-    <div className="min-h-screen mt-12 flex flex-col md:flex-row bg-gray-100">
+    <div className="min-h-screen bg-gray-50 flex pt-16">
       {/* Sidebar */}
       <aside
-        className={`fixed inset-y-0 left-0 w-64 bg-gray-900 shadow-md transform transition-transform duration-300 z-20 ${isOpen ? 'translate-x-0' : '-translate-x-full'
-          } md:static md:translate-x-0 md:block`}
+        className={`fixed inset-y-0 left-0 w-64 bg-gradient-to-b from-gray-900 to-gray-800 shadow-xl transform transition-transform duration-300 ease-in-out z-50 ${isOpen ? 'translate-x-0' : '-translate-x-full'} md:relative md:translate-x-0`}
       >
-        <div className="p-5 flex justify-center">
-          <Link href="/dashboard"><Image src="/img/logo.png" alt='Logo' height={50} width={200} /></Link>
+        <div className="p-5 flex justify-center border-b border-gray-700">
+          <Link href="/dashboard">
+            <Image 
+              src="/img/logo.png" 
+              alt="Logo" 
+              height={50} 
+              width={200} 
+              className="hover:opacity-90 transition-opacity"
+            />
+          </Link>
         </div>
-        <nav>
-          <ul>
-            <li className="hover:bg-gray-700 transition duration-300 flex items-center">
-              <FaHome className="mx-3 text-gray-50 text-xl" />
-              <Link href="/dashboard" className="block text-xl text-gray-50 py-2 px-4" onClick={handleHomeClick}>
-                Home
-              </Link>
-            </li>
-            <li className="hover:bg-gray-700 transition duration-300 flex items-center">
-              <FaMapMarkerAlt className="mx-3 text-gray-50 text-xl" />
-              <Link href="/projects/crud" className="block text-xl text-gray-50 py-2 px-4">
-                Projects
-              </Link>
-            </li>
-            <li className="hover:bg-gray-700 transition duration-300 flex items-center">
-              <FaUser className="mx-3 text-gray-50 text-xl" />
-              <Link href="/clients/crud" className="block text-xl text-gray-50 py-2 px-4">
-                Clients
-              </Link>
-            </li>
-            <li className="hover:bg-gray-700 transition duration-300 flex items-center">
-              <FaNewspaper className="mx-3 text-gray-50 text-xl" />
-              <Link href="/news-events/crud" className="block text-xl text-gray-50 py-2 px-4">
-                News & Events
-              </Link>
-            </li>
-            <li className="hover:bg-gray-700 transition duration-300 flex items-center">
-              <FaFileInvoice className="mx-3 text-gray-50 text-xl" />
-              <Link href="/prime-locations/crud" className="block text-xl text-gray-50 py-2 px-4">
-                Locations
-              </Link>
-            </li>
-            <li className="hover:bg-gray-700 transition duration-300 flex items-center">
-              <FaSignOutAlt className="mx-3 text-gray-50 text-xl" />
-              <button
-                onClick={handleLogout}
-                className="block text-xl text-gray-50 py-2 px-4"
+        <nav className="p-4">
+          <ul className="space-y-2">
+            <li>
+              <Link 
+                href="/dashboard" 
+                className={`flex items-center p-3 rounded-lg transition-all ${pathname === '/dashboard' ? 'bg-gray-700 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white'}`}
+                onClick={handleHomeClick}
               >
-                Logout
+                <FaHome className="text-lg mr-3" />
+                <span className="font-medium">Home</span>
+              </Link>
+            </li>
+            <li>
+              <Link 
+                href="/projects/crud" 
+                className={`flex items-center p-3 rounded-lg transition-all ${pathname.includes('/projects') ? 'bg-gray-700 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white'}`}
+              >
+                <FaMapMarkerAlt className="text-lg mr-3" />
+                <span className="font-medium">Projects</span>
+              </Link>
+            </li>
+            <li>
+              <Link 
+                href="/clients/crud" 
+                className={`flex items-center p-3 rounded-lg transition-all ${pathname.includes('/clients') ? 'bg-gray-700 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white'}`}
+              >
+                <FaUser className="text-lg mr-3" />
+                <span className="font-medium">Clients</span>
+              </Link>
+            </li>
+            <li>
+              <Link 
+                href="/news-events/crud" 
+                className={`flex items-center p-3 rounded-lg transition-all ${pathname.includes('/news-events') ? 'bg-gray-700 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white'}`}
+              >
+                <FaNewspaper className="text-lg mr-3" />
+                <span className="font-medium">News & Events</span>
+              </Link>
+            </li>
+            <li>
+              <Link 
+                href="/blogs/crud" 
+                className={`flex items-center p-3 rounded-lg transition-all ${pathname.includes('/news-events') ? 'bg-gray-700 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white'}`}
+              >
+                <FaBlogger className="text-lg mr-3" />
+                <span className="font-medium">Blogs</span>
+              </Link>
+            </li>
+            <li>
+              <Link 
+                href="/prime-locations/crud" 
+                className={`flex items-center p-3 rounded-lg transition-all ${pathname.includes('/prime-locations') ? 'bg-gray-700 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white'}`}
+              >
+                <FaFileInvoice className="text-lg mr-3" />
+                <span className="font-medium">Locations</span>
+              </Link>
+            </li>
+            <li>
+              <Link 
+                href="/dashboard/change-password" 
+                className={`flex items-center p-3 rounded-lg transition-all ${pathname.includes('/change-password') ? 'bg-gray-700 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white'}`}
+              >
+                <FaLock className="text-lg mr-3" />
+                <span className="font-medium">Change Password</span>
+              </Link>
+            </li>
+            <li className="border-t border-gray-700 pt-2 mt-2">
+              <button 
+                onClick={handleLogout} 
+                className="flex items-center w-full p-3 rounded-lg text-gray-300 hover:bg-gray-700 hover:text-red-400 transition-all"
+              >
+                <FaSignOutAlt className="text-lg mr-3" />
+                <span className="font-medium">Logout</span>
               </button>
             </li>
           </ul>
         </nav>
       </aside>
 
-      {/* Mobile Header with Hamburger Menu */}
-      <div className={`md:hidden flex justify-between p-5 bg-white shadow-md fixed top-0 left-0 right-0 z-30`}>
-        <h2 className="text-xl font-bold">Dashboard</h2>
-        <button onClick={toggleMenu} className="focus:outline-none">
-          {isOpen ? <FaTimes className="text-2xl" /> : <FaBars className="text-2xl" />}
+      {/* Mobile Header */}
+      <div className={`md:hidden flex justify-between items-center p-4 bg-white shadow-sm ${isOpen ? 'fixed top-0 left-0 right-0 z-50' : 'relative'}`}>
+        <div className="flex items-center">
+          <FaChartLine className="text-blue-600 mr-2 text-xl" />
+          <h2 className="text-xl font-bold text-gray-800">Dashboard</h2>
+        </div>
+        <button 
+          onClick={toggleMenu} 
+          className="focus:outline-none p-2 rounded-md hover:bg-gray-100 transition-colors"
+          aria-label="Toggle menu"
+        >
+          {isOpen ? (
+            <FaTimes className="text-gray-600 text-2xl" />
+          ) : (
+            <FaBars className="text-gray-600 text-2xl" />
+          )}
         </button>
       </div>
 
-      {/* Main Content Area */}
-      <main className="flex-grow p-6 mt-16 md:mt-0 z-10">
+      {/* Main Content */}
+      <main className="flex-1 p-6 transition-all duration-300 overflow-auto">
         {children}
       </main>
 
-      {/* Overlay when the menu is open */}
+      {/* Overlay */}
       {isOpen && (
         <div
-          className="fixed inset-0 bg-black opacity-50 z-10"
-          onClick={toggleMenu}  // Ensure the overlay closes when clicked
+          className="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm"
+          onClick={() => setIsOpen(false)}
         />
       )}
     </div>
